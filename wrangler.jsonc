@@ -1,0 +1,9 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "mjwells",
+  "compatibility_date": "2026-08-06",
+  // Static export only — serve Next's `out/` directory. No Worker script, no OpenNext.
+  "assets": {
+    "directory": "./out"
+  }
+}

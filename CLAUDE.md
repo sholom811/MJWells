@@ -79,13 +79,19 @@ npm run lint     # eslint, must be clean
 npx serve out    # serve the built static output locally
 ```
 
-## Deploy (Cloudflare Pages) — documented, not automated
+## Deploy (Cloudflare) — Git-connected, static assets via Wrangler
 
-No deploy has been run or connected from this repo. When someone does connect it:
+Cloudflare’s current UI often requires a **Deploy command** and will otherwise run
+`npx wrangler deploy`, which auto-detects Next.js and tries OpenNext/Workers — that path
+breaks with `output: 'export'` (no standalone server bundle). This repo has a
+`wrangler.jsonc` that only serves the static `out/` directory (no Worker script, no OpenNext).
 
-- Framework preset: **Next.js (Static HTML Export)**
+Dashboard settings:
+
 - Build command: `npm run build`
-- Build output directory: `out`
+- Deploy command: `npx wrangler deploy`
+- Build output directory: `out` (if the field is shown)
+- Do **not** use an OpenNext / “full Next.js on Workers” preset
 - Environment variables:
   - `NEXT_PUBLIC_SQUARE_CHECKOUT_URL` (real Square payment link)
   - `NEXT_PUBLIC_SITE_URL` (production origin, e.g. `https://example.com` — required so
