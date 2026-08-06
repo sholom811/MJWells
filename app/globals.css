@@ -1,0 +1,293 @@
+@import "tailwindcss";
+
+/*
+ * Token system — pulled directly from the cover art: deep blueprint-navy sky
+ * over the Tower of David, warm sandstone wall lit at golden hour, cream
+ * title lettering, and a faint drafting grid printed over the whole scene.
+ * The page reuses those exact values so the site and the book read as one
+ * object, not a website *about* a book.
+ */
+@theme {
+  --color-ink: #0b1220; /* near-black navy — footer, deepest contrast */
+  --color-navy: #1b2a49; /* primary dark background */
+  --color-navy-line: #3d5372; /* hairlines / muted text on navy */
+  --color-gold: #c1904f; /* sandstone/gold — CTAs, links, accents on navy */
+  --color-gold-deep: #8a5f2c; /* same accent, darkened for AA contrast on cream */
+  --color-gold-pale: #ecdcb8; /* warm headline colour on navy */
+  --color-page: #f6efe0; /* cream — the "paper" section */
+  --color-page-ink: #1b2a49; /* body text on cream */
+  --color-page-muted: #5c5140; /* secondary text on cream */
+
+  --font-display: var(--font-fraunces);
+  --font-body: var(--font-work-sans);
+  --font-mono: var(--font-plex-mono);
+}
+
+@layer base {
+  * {
+    scrollbar-gutter: stable;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--color-navy);
+    color: var(--color-gold-pale);
+    font-family: var(--font-body);
+  }
+
+  ::selection {
+    background: var(--color-gold);
+    color: var(--color-ink);
+  }
+
+  /* Visible, deliberate focus ring everywhere — required by brief. */
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 3px;
+    border-radius: 1px;
+  }
+}
+
+@layer utilities {
+  /* Faint architectural drafting grid, echoing the texture printed over the
+     cover photograph. Two layers: a fine 1px grid and a coarser structural
+     grid, both extremely low-opacity so text stays readable.
+
+     The grid lives on an oversized `::after` pseudo-element rather than the
+     section's own `background-image`, so the scroll parallax below only
+     ever animates `transform` on that pseudo — never `background-position`
+     on the section itself, which would repaint the whole section every
+     scroll frame. `position: relative` + `overflow: hidden` here contain
+     the oversized layer so its edges never show. Any real content placed
+     inside a `.bg-blueprint` section needs its own `position: relative`
+     and a `z-index` above 0 (see `.hero-glow-content`, and the `relative
+     z-10` on About's content wrapper in page.tsx) — otherwise it's
+     non-positioned and paints *behind* this positioned pseudo-element. */
+  .bg-blueprint {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--color-navy);
+  }
+
+  .bg-blueprint::after {
+    content: "";
+    position: absolute;
+    inset: -15%;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, rgba(236, 220, 184, 0.07) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(236, 220, 184, 0.07) 1px, transparent 1px),
+      linear-gradient(to right, rgba(236, 220, 184, 0.14) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(236, 220, 184, 0.14) 1px, transparent 1px);
+    background-size:
+      24px 24px,
+      24px 24px,
+      120px 120px,
+      120px 120px;
+    will-change: transform;
+  }
+
+  /* Golden-hour glow behind the hero content — a soft gold radial that
+     breathes and drifts, echoing the light already on the cover's
+     sandstone walls. Pseudo-element so it never competes with layout;
+     z-index keeps it under the hero copy (see .hero-glow-content). */
+  .hero-glow {
+    position: relative;
+  }
+  .hero-glow::before {
+    content: "";
+    position: absolute;
+    inset: -20%;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      circle at 50% 40%,
+      rgba(193, 144, 79, 0.1) 0%,
+      transparent 60%
+    );
+    will-change: transform;
+    animation: glow-drift 45s ease-in-out infinite;
+  }
+  .hero-glow-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Load entrance: staggered fade + short rise, hero elements in reading
+     order. Hidden state lives only in the keyframe's `from` — resting
+     state of .rise-in itself sets nothing but the animation, so a miss
+     (reduced motion, no animation support) renders fully visible. */
+  .rise-in {
+    animation: rise-in 0.8s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  }
+  .rise-in-2 {
+    animation-delay: 0.14s;
+  }
+  .rise-in-3 {
+    animation-delay: 0.28s;
+  }
+  .rise-in-4 {
+    animation-delay: 0.42s;
+  }
+
+  /* CTA micro-interaction: arrow nudges right on hover/focus. */
+  .buy-button-arrow {
+    display: inline-block;
+    transition: transform 150ms;
+  }
+  .group:hover .buy-button-arrow,
+  .group:focus-visible .buy-button-arrow {
+    transform: translateX(4px);
+  }
+}
+
+/* Scroll parallax for the `.bg-blueprint::after` grid layer — a small,
+   symmetric vertical drift so the grid reads as a surface sitting slightly
+   behind the content rather than a texture crawling on its own. Kept well
+   inside the pseudo-element's `-15%` overshoot (see `.bg-blueprint::after`
+   above) so no edge is ever exposed at either scroll extreme. */
+@keyframes grid-parallax {
+  from {
+    transform: translate3d(0, -3%, 0);
+  }
+  to {
+    transform: translate3d(0, 3%, 0);
+  }
+}
+
+@keyframes glow-drift {
+  0%,
+  100% {
+    transform: translate3d(-4%, 0, 0) scale(1);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translate3d(4%, -3%, 0) scale(1.12);
+    opacity: 0.8;
+  }
+}
+
+/* Reused for both the load entrance (above) and scroll reveals (below) —
+   one keyframe, two timelines. Hidden state only here, in `from`. */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+}
+
+@keyframes cover-reveal {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@keyframes corner-draw {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+
+@keyframes portrait-kenburns {
+  from {
+    transform: scale(1.06);
+  }
+}
+
+@keyframes hairline-grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+/* Scroll reveals: native scroll-driven animations only, no JS fallback
+   needed because every base class above is already the visible resting
+   state — an @supports miss just means the page never fires the reveal
+   and renders exactly as if it had already completed. */
+@supports (animation-timeline: view()) {
+  .reveal,
+  .reveal-cover,
+  .reveal-corner,
+  .reveal-portrait,
+  .reveal-hairline {
+    animation-timeline: view();
+  }
+
+  .reveal {
+    animation: rise-in 0.8s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+    animation-range: entry 0% cover 45%;
+  }
+
+  .reveal-cover {
+    animation: cover-reveal 0.8s ease-out both;
+    animation-range: entry 0% cover 45%;
+  }
+
+  /* Corner brackets "snap into place" with a tiny stagger, achieved via
+     animation-range offsets rather than animation-delay (delay semantics
+     on non-monotonic timelines are inconsistent across engines). */
+  .reveal-corner {
+    animation: corner-draw 0.65s ease-out both;
+    animation-range: entry 0% cover 35%;
+  }
+  .reveal-corner-2 {
+    animation-range: entry 3% cover 38%;
+  }
+  .reveal-corner-3 {
+    animation-range: entry 6% cover 41%;
+  }
+  .reveal-corner-4 {
+    animation-range: entry 9% cover 44%;
+  }
+
+  .reveal-portrait {
+    transform-origin: center;
+    animation: portrait-kenburns 1s linear both;
+    animation-range: entry 0% cover 100%;
+  }
+
+  .reveal-hairline {
+    transform-origin: center;
+    animation: hairline-grow 0.65s ease-out both;
+    animation-range: entry 0% cover 45%;
+  }
+}
+
+/* Blueprint grid parallax: a separate feature query from the view()-based
+   reveals above because it's a different scroll-driven-animations function
+   (scroll() vs view()) with independent browser support. A miss here just
+   means `.bg-blueprint::after` stays in its static (unanimated) resting
+   state set outside this block — still a fully valid, fully visible grid. */
+@supports (animation-timeline: scroll(root block)) {
+  .bg-blueprint::after {
+    animation: grid-parallax 1s linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0% 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .bg-blueprint::after,
+  .hero-glow::before,
+  .rise-in,
+  .reveal,
+  .reveal-cover,
+  .reveal-corner,
+  .reveal-portrait,
+  .reveal-hairline {
+    animation: none !important;
+  }
+}
