@@ -3,7 +3,7 @@ import { author, bio, book } from "@/content";
 
 const year = new Date().getFullYear();
 
-/** Buy CTA. Square is a plain hosted payment link — no SDK, no API route.
+/** Buy CTA. Stripe is a plain hosted Payment Link — no SDK, no API route.
  *  If the env var is unset/empty, render a disabled "Coming soon" control
  *  instead of a dead link. This is the one bit of branching logic here. */
 function BuyButton({ className = "" }: { className?: string }) {

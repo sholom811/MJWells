@@ -14,7 +14,7 @@ export const book = {
     "Book cover of The Nehemiah Blueprint by Michael J. Wells: the Tower of David and Jerusalem's walls at golden hour, overlaid with a faint architectural blueprint grid.",
   // TODO: fill in once Michael confirms the retail price. Leave null — the CTA renders without a price line when this is null.
   price: null as number | null,
-  checkoutUrl: process.env.NEXT_PUBLIC_SQUARE_CHECKOUT_URL ?? "",
+  checkoutUrl: process.env.NEXT_PUBLIC_STRIPE_CHECKOUT_URL ?? "",
   // TODO: replace with Michael's real back-cover copy.
   blurb:
     "Every rebuilding effort starts with an honest look at the rubble. In The Nehemiah Blueprint, Michael J. Wells draws on the ancient story of Nehemiah to offer a practical, visionary framework for leaders ready to turn brokenness into blueprint — in their own lives and in the leaders they are raising up. It's a field guide for pastors, planters, and anyone entrusted with rebuilding something that matters.",

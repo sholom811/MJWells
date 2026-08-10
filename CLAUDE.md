@@ -27,20 +27,20 @@ deploy target with whoever owns this project.** Static export cannot contain any
 it will silently break at build time or deploy time. If a feature seems to need a backend, the
 right move is to surface that tradeoff, not to quietly add one.
 
-## Checkout: Square hosted Payment Link, not the SDK
+## Checkout: Stripe hosted Payment Link, not the SDK
 
-The buy button is a plain `<a>` tag to a Square-hosted payment page, whose URL comes from
-`NEXT_PUBLIC_SQUARE_CHECKOUT_URL`. Square owns card capture, tax, shipping, receipts, and PCI
-compliance entirely on their hosted page. We never embed the Square Web Payments SDK, never call
-a Square API, never handle a card number. This is what makes the static-export/no-backend
-constraint above actually work for a real e-commerce flow — don't "upgrade" this to an embedded
-checkout without revisiting the deploy target.
+The buy button is a plain `<a>` tag to a Stripe-hosted Payment Link page, whose URL comes from
+`NEXT_PUBLIC_STRIPE_CHECKOUT_URL`. Stripe owns card capture, tax, shipping, receipts, and PCI
+compliance entirely on their hosted page. We never embed Stripe.js / Elements, never create
+Checkout Sessions via API, never handle a card number. This is what makes the
+static-export/no-backend constraint above actually work for a real e-commerce flow — don't
+"upgrade" this to an embedded checkout without revisiting the deploy target.
 
 The env var is `NEXT_PUBLIC_*` on purpose: it's inlined into the static HTML at build time, and
 that's fine because a checkout link is meant to be public (it's the thing customers click). There
 is no secret here.
 
-**Empty-URL behavior:** if `NEXT_PUBLIC_SQUARE_CHECKOUT_URL` is unset or empty, the buy button
+**Empty-URL behavior:** if `NEXT_PUBLIC_STRIPE_CHECKOUT_URL` is unset or empty, the buy button
 renders as a disabled "Coming soon" `<button>` instead of a dead link. See `BuyButton` in
 `app/page.tsx` — this is the one piece of branching logic in the whole page, and the only thing
 here that's ever been worth a test.
@@ -93,7 +93,7 @@ Dashboard settings:
 - Build output directory: `out` (if the field is shown)
 - Do **not** use an OpenNext / “full Next.js on Workers” preset
 - Environment variables:
-  - `NEXT_PUBLIC_SQUARE_CHECKOUT_URL` (real Square payment link)
+  - `NEXT_PUBLIC_STRIPE_CHECKOUT_URL` (real Stripe Payment Link)
   - `NEXT_PUBLIC_SITE_URL` (production origin, e.g. `https://example.com` — required so
     Open Graph / Twitter image URLs resolve absolutely via `metadataBase`)
 
