@@ -4,10 +4,15 @@ Project instructions for agents working on this repo. Read this before making ch
 
 ## What this is
 
-A one-page author portfolio site for Michael J. Wells, pastor and author of *The Nehemiah
-Blueprint: Redeeming Brokenness Through Visionary Leadership*. Four sections on a single route:
-hero, book + buy, about/bio, footer. Nothing else — no blog, no CMS, no analytics, no contact
-form, no additional routes. See "Growing this site" below for when that's allowed to change.
+An author portfolio site for Michael J. Wells, pastor and author of *The Nehemiah Blueprint:
+Redeeming Brokenness Through Visionary Leadership*. Two routes:
+
+- `/` — hero, book + buy, about/bio, footer.
+- `/book-the-author` (`app/book-the-author/page.tsx`) — speaking/booking page: intro + contact,
+  a church-events section, a business-events section, then one shared Formbricks form section
+  (`#request`). Added Sept 2026. See "Booking page" and "Formbricks embed" below.
+
+Nothing else — no blog, no CMS, no analytics. See "Growing this site" for the bar to add more.
 
 ## Stack
 
@@ -27,6 +32,10 @@ deploy target with whoever owns this project.** Static export cannot contain any
 it will silently break at build time or deploy time. If a feature seems to need a backend, the
 right move is to surface that tradeoff, not to quietly add one.
 
+Multiple static routes are fine (`/book-the-author` is one) — `output: 'export'` prerenders each
+to its own `.html` in `out/`, no runtime involved. The line is server code, not extra pages.
+Verify a build produces no `_worker.js` / `*.func` in `out/`.
+
 ## Checkout: Stripe hosted Payment Link, not the SDK
 
 The buy button is a plain `<a>` tag to a Stripe-hosted Payment Link page, whose URL comes from
@@ -42,8 +51,36 @@ is no secret here.
 
 **Empty-URL behavior:** if `NEXT_PUBLIC_STRIPE_CHECKOUT_URL` is unset or empty, the buy button
 renders as a disabled "Coming soon" `<button>` instead of a dead link. See `BuyButton` in
-`app/page.tsx` — this is the one piece of branching logic in the whole page, and the only thing
+`app/ui.tsx` — this is the one piece of branching logic in the whole page, and the only thing
 here that's ever been worth a test.
+
+## Booking page (`/book-the-author`)
+
+Two sections — church events, business events — built from copy Michael supplied as
+`church_booking.pdf` / `business_booking.pdf`. All of it (bios, speaking emphases, the
+"what a visit looks like" cards, contact email/phone) lives in `content.ts` under `booking`.
+Fee, honorarium/payee, and W-9 details from the PDFs are **deliberately not on the page** —
+those get handled after a host reaches out; only a one-line "host covers travel & lodging;
+speaking fee arranged in advance" summary is public.
+
+Section components (`BookingSection`, `SettingCard`) are colocated in
+`app/book-the-author/page.tsx`, same as the homepage's sections.
+
+## Formbricks embed — approved exception to "no runtime network calls"
+
+The `#request` section renders `<FormbricksEmbed>` (`app/formbricks-embed.tsx`) — a plain
+`<iframe>` to one self-hosted Formbricks survey (`forms.nccvaldosta.com/s/<id>?embed=true`,
+`?embed=true` strips its page chrome). One survey serves every context; the church and business
+sections just link down to it. This is a deliberate, owner-approved exception to the "no
+external runtime calls" stance — same reasoning as Stripe: Formbricks owns form capture,
+validation, storage, and notifications. Still **no `"use client"`, no backend of ours, no
+secret, no Cloudflare Function** — the iframe is just markup, deploy target unchanged.
+
+The URL lives in `content.ts` as `booking.form.url`, with a working default and an optional
+`NEXT_PUBLIC_FORMBRICKS_URL` override (public — it's an embed link, not a secret).
+
+**Empty-URL behavior** (mirrors `BuyButton`): blank `src` ⇒ `FormbricksEmbed` renders a
+"being finalized" placeholder box instead of the iframe.
 
 ## Where content lives
 
@@ -51,10 +88,13 @@ All copy — author name, book title/subtitle/blurb/price, bio paragraphs, image
 text — lives in `content.ts` at the repo root. **Never hardcode copy directly in JSX.** This is
 the single place Michael (or an agent on his behalf) edits to change what the site says.
 
-Two fields are marked `// TODO` in `content.ts` pending real input from Michael:
+Fields marked `// TODO` in `content.ts` pending real input from Michael:
 - `book.price` — currently `null`. The price line only renders when this is non-null.
-- `book.blurb` — currently a placeholder holding blurb written from the title/subtitle. Replace
-  with Michael's real back-cover copy when he supplies it.
+- `book.blurb` — placeholder written from the title/subtitle. Replace with real back-cover copy.
+
+`booking.form.url` is live (real self-hosted Formbricks survey). `content.ts` also holds `nav`
+(link labels only — route paths live in `app/nav.tsx`) and
+`booking` (everything on `/book-the-author`).
 
 ## Image pipeline
 
@@ -96,37 +136,61 @@ Dashboard settings:
   - `NEXT_PUBLIC_STRIPE_CHECKOUT_URL` (real Stripe Payment Link)
   - `NEXT_PUBLIC_SITE_URL` (production origin, e.g. `https://example.com` — required so
     Open Graph / Twitter image URLs resolve absolutely via `metadataBase`)
+  - `NEXT_PUBLIC_FORMBRICKS_URL` (optional — `content.ts` has a working default; set only to
+    swap the embedded booking survey without a code edit. See "Formbricks embed")
 
 ## Social images (OG + favicon)
 
 Static App Router metadata files (picked up automatically; works with `output: 'export'`):
 
 - `app/opengraph-image.png` — 1200×630 share card (blueprint navy + gold, MJW mark)
-- `app/icon.png` — circular MJW monogram favicon
+- `app/icon.png` — favicon.
 
-These were generated once via `ImageResponse` + curl, then committed as PNGs. To regenerate,
+The MJW mark: `icon-source-2160.png` at the **repo root** is the 2160px original (kept out of
+`public/` on purpose — see below; it's not served). Two derivatives are committed and used:
+
+```
+sips -Z 256 --setProperty formatOptions 85 icon-source-2160.png --out app/icon.png        # favicon
+sips -Z 400 --setProperty formatOptions 90 icon-source-2160.png --out public/mjw-mark.png  # hero mark, left of the hero copy on both pages
+```
+
+**Never put the mark at `public/icon.png`** — that path collides with the `app/icon.png`
+metadata route (`/icon.png` then 500s in dev; in a static export `public/` silently loses).
+That's why the hero image is `public/mjw-mark.png`, not the favicon file.
+
+The OG image was generated once via `ImageResponse` + curl, then committed as a PNG. To regenerate,
 temporarily reintroduce `app/opengraph-image.tsx` / `app/icon.tsx` (`dynamic = "force-static"`
 required under static export), `npm run dev`, curl the routes, replace the PNGs, remove the
 `.tsx` files. Do not leave a runtime OG API route — that breaks the static-export deploy target.
 
 ## Growing this site
 
-Deliberately lazy right now: one `app/page.tsx` with section components (`Hero`, `BookSection`,
-`About`, `Footer`, plus small helpers `BuyButton`, `CornerMark`, `Eyebrow`) colocated in that same
-file, no `components/` directory. This is correct for a single page — don't split it into
-`components/` preemptively.
+The second route (`/book-the-author`, Sept 2026) triggered the first split, done minimally:
 
-Split it out when a second thing that needs those pieces actually shows up: a second page/route,
-a second author, or a component reused in more than one place. At that point also reconsider
-whether `content.ts` should become per-section files. Until then, resist adding abstraction for
-its own sake.
+- `app/ui.tsx` — the pieces both pages use: `BuyButton`, `CornerMark`, `Eyebrow`, `Footer`.
+- `app/nav.tsx` — the shared nav (see "Motion").
+- `app/formbricks-embed.tsx` — the form embed (see "Formbricks embed").
+- Section components stay **colocated** in their page file: `Hero`/`BookSection`/`About` in
+  `app/page.tsx`, `BookingSection`/`SettingCard`/`RequestSection` in `app/book-the-author/page.tsx`.
+
+Still no `components/` directory — a flat `app/*.tsx` per shared piece is enough. Add one only
+when the shared surface outgrows a handful of files. `content.ts` is still one file; revisit
+per-section splitting if it keeps growing. Resist abstraction for its own sake.
 
 ## Motion
 
 Pure CSS, zero JavaScript. All keyframes and motion utility classes live in `app/globals.css`;
-`app/page.tsx` only adds class names — no structural changes, no `"use client"`.
+page files only add class names — no structural changes, no `"use client"` anywhere in the app.
 
-Three layers:
+**Nav toggle** (`app/nav.tsx`, `.nav-*` in `globals.css`): the mobile hamburger is a hidden
+`<input type="checkbox">` + `:checked` sibling selectors — no JS, no state, no `"use client"`.
+Desktop shows the link list always (right edge of the hero); mobile shows a burger that
+`:checked` slides a panel open. Same degradation discipline as the reveals: the only hidden
+state is the mobile-closed panel, gated on an explicit `:not(:checked)`, so a CSS failure
+leaves the menu **open**. Motion is plain `transition`s, already neutralised by the global
+`transition-duration: 0.01ms` in the reduced-motion block.
+
+Three layers of the ambient/scroll motion system:
 - **Ambient** (always running): `.bg-blueprint` no longer self-animates — the two grid layers live
   on an oversized `::after` pseudo-element (`inset: -15%`, `pointer-events: none`) so the parallax
   below only ever animates `transform`, never `background-position` (which would repaint the whole
