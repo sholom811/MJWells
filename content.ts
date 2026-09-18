@@ -42,7 +42,6 @@ export const nav = {
 export const booking = {
   intro: {
     eyebrow: "Speaking & Events",
-    heading: "Book Michael to Speak",
     body: "Michael speaks at churches, conferences, businesses, and leadership networks across the United States, Europe, and the Middle East — biblical exposition, leadership formation, and the themes of The Nehemiah Blueprint. Tell him about your event using the form below.",
   },
   contact: {
@@ -60,6 +59,8 @@ export const booking = {
   church: {
     eyebrow: "For Churches & Ministries",
     title: "Church & Ministry Events",
+    portrait: "/michael-church.jpg",
+    portraitAlt: "Michael J. Wells speaking at a church event.",
     bio: "Michael Wells brings over 30 years of vocational ministry experience, including two decades of pastoral ministry, leadership, and church planting. For the past 12 years he has also led an apostolic network dedicated to equipping, training, and launching Kingdom leaders. He is the author of The Nehemiah Blueprint, which focuses on visionary leadership being used to redeem brokenness in our society. Michael is close to finishing a doctorate in Ministry & Theology. His teaching is theological, practical, and Christ-centered, drawing on biblical exposition, five-fold ministry, and leadership development for pastors, marketplace leaders, and emerging leaders.",
     emphases: [
       "Kingdom culture and biblical leadership formation",
@@ -92,6 +93,8 @@ export const booking = {
   business: {
     eyebrow: "For Businesses & Organizations",
     title: "Business & Organizational Events",
+    portrait: "/michael-business.jpg",
+    portraitAlt: "Michael J. Wells speaking at a business event.",
     bio: "Michael Wells brings over 30 years of leadership experience, including two decades building and leading organizations through his work in pastoral ministry and church planting. For the past 12 years he has also led a national network dedicated to equipping, training, and launching emerging leaders. He is the author of a book on leadership formation, The Nehemiah Blueprint, and is currently finishing a doctorate in Leadership Studies. His teaching is practical, values-driven, and results-oriented, drawing on decades of experience in organizational development, team building, and leadership formation for executives, entrepreneurs, and emerging leaders.",
     emphases: [
       "Organizational culture and leadership formation",
