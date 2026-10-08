@@ -12,6 +12,10 @@ Redeeming Brokenness Through Visionary Leadership*. Two routes:
   a church-events section, a business-events section, then one shared Formbricks form section
   (`#request`). Added Sept 2026. See "Booking page" and "Formbricks embed" below.
 
+- `/privacy` (`app/privacy/page.tsx`) — privacy policy; linked only (subtly) from the footer, not
+  the nav. Copy in `content.ts` under `privacy`. Policy states the site has no analytics — keep
+  that true or update the policy.
+
 Nothing else — no blog, no CMS, no analytics. See "Growing this site" for the bar to add more.
 
 ## Stack

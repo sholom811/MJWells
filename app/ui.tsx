@@ -2,7 +2,8 @@
 // second consumer (see CLAUDE.md "Growing this site"). Section components stay
 // colocated in their page files — only these small reused pieces live here.
 
-import { author, book } from "@/content";
+import Link from "next/link";
+import { author, book, privacy } from "@/content";
 
 const year = new Date().getFullYear();
 
@@ -98,6 +99,12 @@ export function Footer() {
       <div className="mx-auto flex max-w-5xl flex-col gap-2 text-sm text-gold sm:flex-row sm:items-center sm:justify-between">
         <p className="font-mono uppercase tracking-[0.2em]">
           &copy; {year} {author.name}
+          <Link
+            href="/privacy"
+            className="ml-4 text-xs tracking-[0.16em] text-gold/60 hover:text-gold"
+          >
+            {privacy.linkLabel}
+          </Link>
         </p>
         {author.email && (
           <a

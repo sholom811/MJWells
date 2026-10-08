@@ -138,3 +138,99 @@ export const booking = {
       "https://forms.nccvaldosta.com/s/cmtvnhnms003n01mkkfaowp4h?embed=true",
   },
 };
+
+// Privacy policy. Footer-only link (app/ui.tsx); page at app/privacy/page.tsx.
+// Contact email reuses booking.contact.email.
+export const privacy = {
+  linkLabel: "Privacy",
+  title: "Privacy Policy",
+  updated: "October 8, 2026",
+  intro:
+    'This policy explains what information Michael J. Wells ("we," "us") collects through www.michaeljwells.com and how we use it.',
+  sections: [
+    {
+      heading: "Information We Collect",
+      items: [
+        {
+          lead: "Booking requests.",
+          text: 'When you submit the "Book the Author" form, we collect what you enter, such as your name, email, organization, event details, and message. The form uses Formbricks software that we host ourselves.',
+        },
+        {
+          lead: "Book purchases.",
+          text: "Purchases are processed by Stripe. Stripe collects your payment details. We receive your name, email, shipping address, and order details so we can ship your book. We do not receive or store your full card number.",
+        },
+        {
+          lead: "Basic technical information.",
+          text: "Our hosting provider automatically processes information such as your IP address, browser type, and pages visited in order to deliver and secure the site.",
+        },
+      ],
+    },
+    {
+      heading: "How We Use It",
+      items: [
+        { text: "To respond to speaking and booking requests" },
+        { text: "To fulfill and ship orders and answer questions about them" },
+        { text: "To keep business and tax records" },
+        { text: "To keep the site running and secure" },
+      ],
+      after:
+        "We do not sell or rent your personal information, and we do not use it for targeted advertising.",
+    },
+    {
+      heading: "Service Providers",
+      items: [
+        { lead: "Cloudflare", text: "- hosting and security" },
+        { lead: "Stripe", text: "- payment processing" },
+        { lead: "Our cloud server provider", text: "- hosts our form software" },
+        {
+          lead: "Shipping carriers",
+          text: "- receive your name and address to deliver your order",
+        },
+      ],
+      after:
+        "Each provider handles information under its own privacy policy. We may also disclose information if required by law.",
+    },
+    {
+      heading: "Cookies",
+      paragraphs: [
+        "We do not use advertising or tracking cookies. Cloudflare may set strictly necessary security cookies, and Stripe may use cookies needed to process payments and prevent fraud.",
+      ],
+    },
+    {
+      heading: "Do Not Track",
+      paragraphs: [
+        'We do not track visitors across third-party websites, and we do not knowingly allow third parties to collect personal information about your activity over time and across different websites through our site. Because of this, we do not respond differently to browser "Do Not Track" signals.',
+      ],
+    },
+    {
+      heading: "Children",
+      paragraphs: [
+        "This site is intended for adults and is not directed to children under 13. We do not knowingly collect personal information from children under 13.",
+      ],
+    },
+    {
+      heading: "Keeping and Protecting Information",
+      paragraphs: [
+        "We keep booking requests as long as needed to respond, and order records as long as needed for business and tax purposes. We use reasonable safeguards, but no website is completely secure.",
+      ],
+    },
+    {
+      heading: "Your Choices",
+      paragraphs: [
+        "You can email us to ask what information we have about you, or to correct or delete it, except records we are legally required to keep.",
+      ],
+    },
+    {
+      heading: "Changes",
+      paragraphs: [
+        "If we update this policy, we will post the new version here and change the date above.",
+      ],
+    },
+  ] as {
+    heading: string;
+    paragraphs?: string[];
+    items?: { lead?: string; text: string }[];
+    after?: string;
+  }[],
+  contactHeading: "Contact",
+};
